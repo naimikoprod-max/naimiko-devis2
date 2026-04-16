@@ -200,9 +200,9 @@ Réponds UNIQUEMENT en JSON valide sans markdown: {"resume":"2 phrases","lignes"
     const res=await fetch('/api/proxy',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({model:'claude-haiku-4-5-20251001',max_tokens:1000,messages:[{role:'user',content:prompt}]})});
     const data=await res.json();
     const txt=data.content?.map(i=>i.text||'').join('')||'';
-    S.result=JSON.parse(txt.replace(/```json|```/g,'').trim());
+    console.log('Réponse brute:', txt); S.result=JSON.parse(txt.replace(/```json|```/g,'').trim());
     S.step=5;
-  }catch(e){alert('Erreur lors du calcul. Veuillez réessayer.');}
+  }catch(e){const errMsg = err?.message || JSON.stringify(err); alert('Erreur: ' + errMsg);}
   finally{S.loading=false;render();}
 }
 function rResult(c){
