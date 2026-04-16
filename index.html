@@ -150,7 +150,7 @@
 <script>
 const STEPS=[{id:1,label:'Projet'},{id:2,label:'Tournage'},{id:3,label:'Post-prod'},{id:4,label:'Options'}];
 const PTYPES=[{id:'institutionnel',label:'Film institutionnel',icon:'🏢'},{id:'touristique',label:'Film touristique',icon:'🏔️'},{id:'evenement',label:'Événement / Festival',icon:'🎪'},{id:'reseaux',label:'Capsules réseaux',icon:'📱'},{id:'pub',label:'Publicité / Promo',icon:'📣'},{id:'autre',label:'Autre projet',icon:'🎬'}];
-const SHOOT=[{id:'0.5',label:'½ journée',hours:'~4h',price:'380 € HT'},{id:'1',label:'1 journée',hours:'~8h',price:'760 € HT'},{id:'1.5',label:'1 j. ½',hours:'~12h',price:'1 140 € HT'},{id:'2',label:'2 journées',hours:'~16h',price:'1 520 € HT'},{id:'3',label:'3 journées',hours:'~24h',price:'2 280 € HT'},{id:'4+',label:'4 jours +',hours:'',price:'Sur devis'}];
+const SHOOT=[{id:'0.5',label:'½ journée',hours:'~4h',price:'349 € HT'},{id:'1',label:'1 journée',hours:'~8h',price:'649 € HT'},{id:'1.5',label:'1 j. ½',hours:'~12h',price:'949 € HT'},{id:'2',label:'2 journées',hours:'~16h',price:'1 249 € HT'},{id:'3',label:'3 journées',hours:'~24h',price:'1 749 € HT'},{id:'4+',label:'4 jours +',hours:'',price:'Sur devis'}];
 const CAPTYPE=[{id:'libre',icon:'🎥',label:'Captation libre',sub:'Peu ou pas scriptée\nEx : événement, reportage'},{id:'prepare',icon:'📋',label:'Tournage préparé',sub:'Structure ou script défini\nEx : interview, institutionnel'}];
 const LIVRABLES=[{id:'1film',icon:'🎞️',name:'1 vidéo finale',desc:'Un seul film livré'},{id:'1film+',icon:'🎞️📱',name:'1 vidéo + déclinaisons',desc:'Film principal + formats réseaux / teaser'},{id:'capsules',icon:'📱',name:'Plusieurs capsules',desc:'2 capsules et plus, formats courts'}];
 const PREPARATION=[{id:'libre',icon:'🌊',name:'Captation libre',desc:'Peu ou pas scriptée — événement, reportage, spontané',badge:null},{id:'trame',icon:'📋',name:'Trame générale',desc:"Structure définie — interview + plans d'illustration",badge:null},{id:'script',icon:'✍️',name:'Script précis',desc:'Plan par plan — pub, promo, séquences planifiées',badge:'Préprod & écriture incluses'}];
@@ -181,7 +181,7 @@ function r3(c){
     c.innerHTML=`<h2>Post-production</h2><p class="sub">3 questions pour estimer précisément le travail de montage.</p><div class="pp-section"><div class="pp-title">Combien de livrables ?</div><div class="pp-row">${lr}</div></div><div class="pp-section" style="margin-top:16px"><div class="pp-title">Niveau de préparation</div><div class="pp-sub">Détermine le temps de dérushage et la complexité du montage.</div><div class="pp-row">${pr}</div></div><div class="pp-section" style="margin-top:16px"><div class="pp-title">Niveau de finition</div><div class="pp-sub">Exigence sur l'étalonnage, le sound design et le graphisme.</div><div class="pp-row">${fr}</div></div><div class="pp-section" style="margin-top:14px">${st}</div><div class="desc-block" style="margin-top:14px"><div class="db-t">Décrivez votre film</div><div class="db-s">Contexte, intervenants, lieux, style souhaité…</div><textarea placeholder="Ex : Film touristique 4 min sur les Gorges de l'Ardèche. Drone + sol. 2 guides interviewés. Livraison 16:9 web + 9:16 réseaux." oninput="S.desc=this.value">${S.desc}</textarea></div>`;
   }
 }
-function r4(c){const dO=isR()?['Format Instagram','Format TikTok','Format YouTube Shorts','Miniatures personnalisées']:['Film 16:9 web','Format 9:16 réseaux','Teaser 30s','Photos HD'];const tags=dO.map(t=>`<button class="tag${S.deliv.includes(t)?' on':''}" onclick="tD('${t}')">${t}</button>`).join('');c.innerHTML=`<h2>Options</h2><p class="sub">Dernières options pour votre estimation.</p><div class="slabel">Prestations complémentaires</div>${tr('drone','🚁','Drone','Autorisations préfectorales incluses · 380 € HT')}${tr('photo','📷','Photographie','Captation photo + retouches Lightroom · 110 € HT/h')}${S.photo?`<div style="margin:0 0 6px 12px"><div style="font-size:11px;color:#888;margin-bottom:4px">Durée :</div><div class="phhours">${['1','2','3','4'].map(h=>`<button class="phbtn${S.photoH===h?' on':''}" onclick="S.photoH='${h}';render()">${h}h</button>`).join('')}</div></div>`:''}<div class="slabel">Déplacement</div>${dr('local','Local (< 30 km)','80 € HT')}${dr('regional','Régional (30–100 km)','130 € HT')}${dr('long','Long trajet (> 100 km)','180 € HT')}<div class="slabel">Formats de livraison</div><div class="tags">${tags}</div>`;}
+function r4(c){const dO=isR()?['Format Instagram','Format TikTok','Format YouTube Shorts','Miniatures personnalisées']:['Film 16:9 web','Format 9:16 réseaux','Teaser 30s','Photos HD'];const tags=dO.map(t=>`<button class="tag${S.deliv.includes(t)?' on':''}" onclick="tD('${t}')">${t}</button>`).join('');c.innerHTML=`<h2>Options</h2><p class="sub">Dernières options pour votre estimation.</p><div class="slabel">Prestations complémentaires</div>${tr('drone','🚁','Drone','Autorisations préfectorales incluses · 249 € HT')}${tr('photo','📷','Photographie','Captation photo + retouches Lightroom · 97 € HT/h')}${S.photo?`<div style="margin:0 0 6px 12px"><div style="font-size:11px;color:#888;margin-bottom:4px">Durée :</div><div class="phhours">${['1','2','3','4'].map(h=>`<button class="phbtn${S.photoH===h?' on':''}" onclick="S.photoH='${h}';render()">${h}h</button>`).join('')}</div></div>`:''}<div class="slabel">Déplacement</div>${dr('local','Local (< 30 km)','49 € HT')}${dr('regional','Régional (30–100 km)','89 € HT')}${dr('long','Long trajet (> 100 km)','149 € HT')}<div class="slabel">Formats de livraison</div><div class="tags">${tags}</div>`;}
 function tr(k,icon,l,s){return`<button class="trow${S[k]?' on':''}" onclick="S['${k}']=!S['${k}'];render()"><span class="ti">${icon}</span><div class="tt"><div class="tl">${l}</div><div class="ts">${s}</div></div><div class="tdot${S[k]?' on':''}">✓</div></button>`;}
 function dr(id,l,p){return`<button class="drow${S.dist===id?' sel':''}" onclick="S.dist='${id}';render()"><span class="dl">${l}</span><span class="dp">${p}</span></button>`;}
 function tD(v){S.deliv=S.deliv.includes(v)?S.deliv.filter(d=>d!==v):[...S.deliv,v];render();}
@@ -190,11 +190,36 @@ function bPD(){if(isR()){const lm={'1film':'1 capsule unique','1film+':'1 capsul
 async function doGen(){
   S.loading=true;render();
   const ss=SHOOT.find(d=>d.id===S.shootId);
-  const prompt=`Tu es l'assistant de devis de NAIMIKO PROD (Ardèche, France).
-TARIFS HT: Tournage 380€/demi-journée · Post-prod 250€/demi-journée · Sous-titres 125€ · Drone 380€ · Déplacement local=80€/régional=130€/long=180€ · Photo 110€/h · TVA 20%
-POST-PROD: Dérush libre=1dj/trame=0.5dj/script=0.25dj | Montage libre=2dj/trame=1.5dj/script=1dj/capsule=0.5dj | Finition standard=0.5dj/soigné=1dj/premium=2dj | 1dj=250€HT
-PROJET: type=${S.ptype} desc="${S.desc||''}" tournage=${S.shootId}dj captation=${S.capType} postprod="${bPD()}" drone=${S.drone} photo=${S.photo?S.photoH+'h':'non'} deplacement=${S.dist} livrables="${S.deliv.join(',')}"
-Réponds UNIQUEMENT en JSON sans markdown: {"resume":"2 phrases","lignes":[{"label":"...","detail":"...","ht":0}],"sous_total_ht":0,"tva":0,"total_ttc":0,"fourchette_basse":0,"fourchette_haute":0,"conseil":"1 conseil"}`;
+  const prompt=`Tu es l'assistant de devis de NAIMIKO PROD (production audiovisuelle, Ardèche).
+
+TARIFS HT EXACTS (tarification dégressive au tournage):
+- Tournage chef opérateur: ½j=349€ / 1j=649€ / 1.5j=949€ / 2j=1249€ / 3j=1749€ (matériel inclus)
+- Post-production: 247€/demi-journée
+- Drone forfait: 249€ (autorisations incluses)
+- Frais matériel+déplacement: local=49€ / régional=89€ / long=149€
+- Photo: 97€/h (retouches incluses)
+- TVA: 20%
+
+RÈGLE POST-PROD (basée sur les vrais devis de l'entreprise):
+La post-prod doit être INFÉRIEURE ou ÉGALE au coût du tournage.
+Calcule en demi-journées (1 dj = 250€ HT):
+
+Bloc dérush: libre=0.25dj / trame=0dj / script=0dj
+Bloc montage: 1 dj de tournage → 1 dj de montage (ratio 1:1 en demi-journées)
+Bloc finition: standard=0.25dj / soigné=0.5dj / premium=1dj
+Capsules: 0.5 dj par capsule (montage+finition inclus)
+Déclinaisons (1film+): +0.5dj
+
+Exemples réels à respecter:
+- ½j tournage (349€) + 1dj postprod (247€) + local (49€) = ~645€ HT pour un projet standard
+- 1j tournage (649€) + 2dj postprod (494€) + local (49€) = ~1192€ HT
+- 3 capsules: tournage + 1.5dj postprod = 3×247€/2 = 370€ HT pour la postprod
+- Drone (249€) s'ajoute si coché
+
+PROJET: type=${S.ptype} | desc="${S.desc||''}" | tournage=${S.shootId} dj à 380€/dj | captation=${S.capType} | postprod="${bPD()}" | drone=${S.drone} | photo=${S.photo?S.photoH+'h':'non'} | deplacement=${S.dist} | livrables="${S.deliv.join(',')}"
+
+Réponds UNIQUEMENT en JSON valide sans markdown:
+{"resume":"2 phrases","lignes":[{"label":"...","detail":"...","ht":0}],"sous_total_ht":0,"tva":0,"total_ttc":0,"fourchette_basse":0,"fourchette_haute":0,"conseil":"1 conseil utile"}`;
   try{
     const response=await fetch('/api/proxy',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({model:'claude-haiku-4-5-20251001',max_tokens:800,messages:[{role:'user',content:prompt}]})});
     const data=await response.json();
