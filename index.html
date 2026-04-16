@@ -197,7 +197,7 @@ RÈGLE ÉCRITURE: Si script précis → inclure 150€HT écriture absorbée dan
 PROJET: Type=${S.ptype} | Desc=${S.desc||'Non précisé'} | Tournage=${S.shootId} demi-journées ${ss?.price||''} | Captation=${S.capType==='libre'?'libre':'préparée'} | Post-prod=${bPD()} | Drone=${S.drone?'Oui':'Non'} | Photo=${S.photo?S.photoH+'h':'Non'} | Déplacement=${S.dist} | Livrables=${S.deliv.join(',')||'Non précisé'}
 Réponds UNIQUEMENT en JSON valide sans markdown: {"resume":"2 phrases","lignes":[{"label":"...","detail":"...","ht":0}],"sous_total_ht":0,"tva":0,"total_ttc":0,"fourchette_basse":0,"fourchette_haute":0,"conseil":"1 conseil concret"}`;
   try{
-    const res=await fetch('/api/proxy',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:1000,messages:[{role:'user',content:prompt}]})});
+    const res=await fetch('/api/proxy',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({model:'claude-haiku-4-5-20251001',max_tokens:1000,messages:[{role:'user',content:prompt}]})});
     const data=await res.json();
     const txt=data.content?.map(i=>i.text||'').join('')||'';
     S.result=JSON.parse(txt.replace(/```json|```/g,'').trim());
