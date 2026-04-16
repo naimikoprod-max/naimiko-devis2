@@ -9,7 +9,7 @@
       "headers": [
         {
           "key": "Content-Security-Policy",
-          "value": "frame-ancestors 'self' https://www.naimiko-prod.com https://editor.wix.com https://*.wixsite.com"
+          "value": "default-src * 'unsafe-inline' 'unsafe-eval' data: blob:; frame-ancestors 'self' https://www.naimiko-prod.com https://editor.wix.com https://*.wixsite.com;"
         }
       ]
     }
