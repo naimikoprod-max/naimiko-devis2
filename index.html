@@ -149,20 +149,22 @@
 </div>
 <script>
 const STEPS=[{id:1,label:'Projet'},{id:2,label:'Tournage'},{id:3,label:'Post-prod'},{id:4,label:'Options'}];
-const PTYPES=[{id:'institutionnel',label:'Film institutionnel',icon:'🏢'},{id:'touristique',label:'Film touristique',icon:'🏔️'},{id:'evenement',label:'Événement / Festival',icon:'🎪'},{id:'reseaux',label:'Capsules réseaux',icon:'📱'},{id:'pub',label:'Publicité / Promo',icon:'📣'},{id:'autre',label:'Autre projet',icon:'🎬'}];
+const PTYPES=[{id:'institutionnel',label:'Film institutionnel',icon:'🏢'},{id:'touristique',label:'Film touristique',icon:'🏔️'},{id:'evenement',label:'Événement / Festival',icon:'🎪'},{id:'reseaux',label:'Capsules réseaux',icon:'📱'},{id:'pub',label:'Publicité / Promo',icon:'📣'},{id:'autre',label:'Autre projet',icon:'🎬'},
+{id:'photo',label:'Reportage / Shooting photo',icon:'📷'}];
 const SHOOT=[{id:'0.5',label:'½ journée',hours:'~4h',price:'349 € HT'},{id:'1',label:'1 journée',hours:'~8h',price:'649 € HT'},{id:'1.5',label:'1 j. ½',hours:'~12h',price:'949 € HT'},{id:'2',label:'2 journées',hours:'~16h',price:'1 249 € HT'},{id:'3',label:'3 journées',hours:'~24h',price:'1 749 € HT'},{id:'4+',label:'4 jours +',hours:'',price:'Sur devis'}];
 const CAPTYPE=[{id:'libre',icon:'🎥',label:'Captation libre',sub:'Peu ou pas scriptée\nEx : événement, reportage'},{id:'prepare',icon:'📋',label:'Tournage préparé',sub:'Structure ou script défini\nEx : interview, institutionnel'}];
 const LIVRABLES=[{id:'1film',icon:'🎞️',name:'1 vidéo finale',desc:'Un seul film livré'},{id:'1film+',icon:'🎞️📱',name:'1 vidéo + déclinaisons',desc:'Film principal + formats réseaux / teaser'},{id:'capsules',icon:'📱',name:'Plusieurs capsules',desc:'2 capsules et plus, formats courts'}];
 const PREPARATION=[{id:'libre',icon:'🌊',name:'Captation libre',desc:'Peu ou pas scriptée — événement, reportage, spontané',badge:null},{id:'trame',icon:'📋',name:'Trame générale',desc:"Structure définie — interview + plans d'illustration",badge:null},{id:'script',icon:'✍️',name:'Script précis',desc:'Plan par plan — pub, promo, séquences planifiées',badge:'Préprod & écriture incluses'}];
 const FINITION=[{id:'standard',icon:'✂️',name:'Standard',desc:'Montage propre, musique, titres basiques'},{id:'soigne',icon:'⭐',name:'Soigné',desc:'Étalonnage poussé, sound design travaillé, graphiques soignés'},{id:'premium',icon:'🏆',name:'Premium',desc:'Motion design, habillage complet, finitions cinématographiques'}];
-let S={step:1,ptype:'',desc:'',shootId:'',capType:'',livrable:'',preparation:'',finition:'',soustitres:false,drone:false,photo:false,photoH:'2',dist:'local',deliv:[],result:null,contactSent:false,loading:false,ct:{name:'',email:'',phone:'',msg:''}};
+let S={step:1,ptype:'',desc:'',shootId:'',capType:'',livrable:'',preparation:'',finition:'',soustitres:false,drone:false,photo:false,photoH:'2',photoDur:'2',photoStyle:'',dist:'local',deliv:[],result:null,contactSent:false,loading:false,ct:{name:'',email:'',phone:'',msg:''}};
 const isR=()=>S.ptype==='reseaux';
-const canNext=()=>{if(S.step===1)return!!S.ptype;if(S.step===2)return!!S.shootId&&!!S.capType;if(S.step===3)return isR()?(!!S.livrable&&!!S.finition):(!!S.livrable&&!!S.preparation&&!!S.finition);return true;};
+const isPhoto=()=>S.ptype==='photo';
+const canNext=()=>{if(S.step===1)return!!S.ptype;if(S.step===2){if(isPhoto())return!!S.photoH&&!!S.photoDur;return!!S.shootId&&!!S.capType;}if(S.step===3){if(isPhoto())return true;return isR()?(!!S.livrable&&!!S.finition):(!!S.livrable&&!!S.preparation&&!!S.finition);}return true;};
 function render(){
   rProg();const c=document.getElementById('content');const nb=document.getElementById('nb');if(nb)nb.remove();
   if(S.loading){c.innerHTML='<div class="spinner-wrap"><div class="spinner"></div><p style="font-size:13px;color:#888">L\'IA calcule votre estimation…</p></div>';return;}
   if(S.step===5){rResult(c);return;}
-  if(S.step===1)r1(c);if(S.step===2)r2(c);if(S.step===3)r3(c);if(S.step===4)r4(c);rNav();
+  if(S.step===1)r1(c);if(S.step===2){if(isPhoto())r2photo(c);else r2(c);}if(S.step===3){if(isPhoto())r3photo(c);else r3(c);}if(S.step===4)r4(c);rNav();
 }
 function rProg(){if(S.step>=5){document.getElementById('progress').innerHTML='';return;}document.getElementById('progress').innerHTML=STEPS.map(s=>{const bc=s.id<S.step?'done':s.id===S.step?'active':'';const lc=s.id<S.step?'dn':s.id===S.step?'cur':'';return`<div class="prog-item"><div class="prog-bar ${bc}"></div><div class="prog-label ${lc}">${s.label}</div></div>`;}).join('');}
 function r1(c){const btns=PTYPES.map(p=>`<button class="ptype-btn${S.ptype===p.id?' sel':''}" onclick="S.ptype='${p.id}';render()"><span class="pi">${p.icon}</span><span class="pl">${p.label}</span></button>`).join('');c.innerHTML=`<h2>Votre projet</h2><p class="sub">Quel type de production recherchez-vous ?</p><div class="grid2">${btns}</div><div class="desc-block"><div class="db-t">Décrivez votre projet</div><div class="db-s">Plus vous êtes précis, plus l'estimation sera juste — contexte, lieux, ambiance, date, intervenants…</div><textarea placeholder="Ex : Film de présentation 3 min pour un domaine viticole ardéchois. Interview du gérant + images extérieures. Pour le site web et Instagram." oninput="S.desc=this.value">${S.desc}</textarea></div>`;}
@@ -189,6 +191,23 @@ function rNav(){const nb=document.createElement('div');nb.id='nb';nb.className='
 function bPD(){if(isR()){const lm={'1film':'1 capsule unique','1film+':'1 capsule + déclinaisons','capsules':'Plusieurs capsules (2 ou plus)'};const fm={'standard':'finition standard','soigne':'finition soignée','premium':'finition premium'};return`${lm[S.livrable]||S.livrable}, ${fm[S.finition]||S.finition}${S.soustitres?', avec sous-titres':''}`;}const lm={'1film':'1 vidéo finale','1film+':'1 vidéo + déclinaisons','capsules':'Plusieurs vidéos distinctes'};const pm={'libre':"captation libre — beaucoup de rushes, dérush important, récit à construire. PAS d'écriture.",'trame':"trame générale — structure connue, montage fluide. PAS d'écriture.",'script':'script précis — peu de rushes, montage ciblé. INCLURE préprod/écriture 150€ HT absorbée dans le montage réduit.'};const fm={'standard':'finition standard','soigne':'finition soignée','premium':'finition premium (motion design)'};return`${lm[S.livrable]||S.livrable} | ${pm[S.preparation]||S.preparation} | ${fm[S.finition]||S.finition}${S.soustitres?' | + sous-titres (125€ HT)':''}`;}
 async function doGen(){
   S.loading=true;render();
+  if(isPhoto()){
+    const dureeMap={'1':'1h (97€ HT)','2':'2h (194€ HT)','3':'3h (291€ HT)','4':'4h (388€ HT)','dj':'demi-journée (389€ HT)','j':'journée complète (749€ HT)'};
+    const photoPrompt=`Tu es l'assistant de devis de NAIMIKO PROD (Ardèche).
+TARIFS PHOTO HT: 97€/h retouches incluses | ½ journée=389€ | journée=749€ | Déplacement local=49€/régional=89€/long=149€ | TVA 20%
+PROJET PHOTO: type=${S.photoStyle||'reportage'} | durée=${dureeMap[S.photoDur]||S.photoDur} | déplacement=${S.dist} | livrables="${S.deliv.join(',')}" | desc="${S.desc||''}"
+Réponds UNIQUEMENT en JSON valide sans markdown: {"resume":"2 phrases","lignes":[{"label":"...","detail":"...","ht":0}],"sous_total_ht":0,"tva":0,"total_ttc":0,"fourchette_basse":0,"fourchette_haute":0,"conseil":"1 conseil utile"}`;
+    try{
+      const response=await fetch('/api/proxy',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({model:'claude-haiku-4-5-20251001',max_tokens:800,messages:[{role:'user',content:photoPrompt}]})});
+      const data=await response.json();
+      if(!response.ok||data.error){throw new Error('Anthropic: '+(data.error?.message||JSON.stringify(data)));}
+      const txt=data.content?.map(i=>i.text||'').join('')||'';
+      S.result=JSON.parse(txt.replace(/```json|```/g,'').trim());
+      S.step=5;
+    }catch(e){alert('Erreur: '+e.message);}
+    finally{S.loading=false;render();}
+    return;
+  }
   const ss=SHOOT.find(d=>d.id===S.shootId);
   const prompt=`Tu es l'assistant de devis de NAIMIKO PROD (production audiovisuelle, Ardèche).
 
@@ -235,6 +254,29 @@ Réponds UNIQUEMENT en JSON valide sans markdown:
   }
   finally{S.loading=false;render();}
 }
+function r2photo(c){
+  c.innerHTML=`<h2>Shooting photo 📷</h2><p class="sub">Combien de temps avez-vous besoin du photographe ?</p>
+  <div class="slabel">Durée de présence</div>
+  <div class="shoot-grid">
+    ${['1','2','3','4'].map(h=>`<button class="shoot-btn${S.photoDur===h?' sel':''}" onclick="S.photoDur='${h}';render()"><div class="sn">${h}h</div><div class="sh">&nbsp;</div><div class="sp">${parseInt(h)*97} € HT</div><div class="su">retouches incluses</div></button>`).join('')}
+    <button class="shoot-btn${S.photoDur==='dj'?' sel':''}" onclick="S.photoDur='dj';render()"><div class="sn">½ journée</div><div class="sh">~4h</div><div class="sp">389 € HT</div><div class="su">retouches incluses</div></button>
+    <button class="shoot-btn${S.photoDur==='j'?' sel':''}" onclick="S.photoDur='j';render()"><div class="sn">Journée</div><div class="sh">~8h</div><div class="sp">749 € HT</div><div class="su">retouches incluses</div></button>
+  </div>
+  <div class="slabel" style="margin-top:14px">Type de shooting</div>
+  <div class="grid2">
+    ${[{id:'reportage',label:'Reportage / Événement',icon:'📸'},{id:'portrait',label:'Portraits / Institutionnel',icon:'🧑‍💼'},{id:'produit',label:'Produit / Entreprise',icon:'🏢'},{id:'nature',label:'Nature / Tourisme',icon:'🏔️'}].map(t=>`<button class="ptype-btn${S.photoStyle===t.id?' sel':''}" onclick="S.photoStyle='${t.id}';render()"><span class="pi">${t.icon}</span><span class="pl">${t.label}</span></button>`).join('')}
+  </div>
+  <div class="desc-block" style="margin-top:12px"><div class="db-t">Décrivez votre projet photo</div><div class="db-s">Contexte, lieu, nombre de personnes, utilisation prévue des photos…</div><textarea placeholder="Ex : Reportage photo pour notre camping en Ardèche. Extérieurs + intérieurs des locatifs. Photos pour le site web et les réseaux." oninput="S.desc=this.value">${S.desc}</textarea></div>`;
+}
+function r3photo(c){
+  const delivOpts=['Photos HD web','Format réseaux sociaux','Impression grand format','Portraits individuels'];
+  const tags=delivOpts.map(t=>`<button class="tag${S.deliv.includes(t)?' on':''}" onclick="toggleD('${t}')">${t}</button>`).join('');
+  c.innerHTML=`<h2>Options & livraison 📦</h2><p class="sub">Dernières précisions pour votre estimation.</p>
+  <div class="slabel">Déplacement</div>
+  ${dr('local','Local (< 30 km)','49 € HT')}${dr('regional','Régional (30–100 km)','89 € HT')}${dr('long','Long trajet (> 100 km)','149 € HT')}
+  <div class="slabel">Livrables souhaités</div>
+  <div class="tags">${tags}</div>`;
+}
 function rResult(c){
   const r=S.result;const fmt=n=>n?.toLocaleString('fr-FR')?? '—';
   const lines=(r.lignes||[]).map(l=>`<div class="dline"><div><div class="dll">${l.label}</div>${l.detail?`<div class="dls">${l.detail}</div>`:''}</div><div class="dlp">${l.ht>0?fmt(l.ht)+' € HT':'Inclus'}</div></div>`).join('');
@@ -244,7 +286,7 @@ function rResult(c){
 }
 function rb(){const b=document.getElementById('bsend');if(b)b.disabled=!(S.ct.name&&S.ct.email);}
 function doSend(){if(S.ct.name&&S.ct.email){S.contactSent=true;render();}}
-function raz(){S={step:1,ptype:'',desc:'',shootId:'',capType:'',livrable:'',preparation:'',finition:'',soustitres:false,drone:false,photo:false,photoH:'2',dist:'local',deliv:[],result:null,contactSent:false,loading:false,ct:{name:'',email:'',phone:'',msg:''}};render();}
+function raz(){S={step:1,ptype:'',desc:'',shootId:'',capType:'',livrable:'',preparation:'',finition:'',soustitres:false,drone:false,photo:false,photoH:'2',photoDur:'2',photoStyle:'',dist:'local',deliv:[],result:null,contactSent:false,loading:false,ct:{name:'',email:'',phone:'',msg:''}};render();}
 render();
 </script>
 </body>
