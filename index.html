@@ -190,19 +190,24 @@ function bPD(){if(isR()){const lm={'1film':'1 capsule unique','1film+':'1 capsul
 async function doGen(){
   S.loading=true;render();
   const ss=SHOOT.find(d=>d.id===S.shootId);
-  const prompt=`Tu es l'assistant de devis de NAIMIKO PROD (production audiovisuelle indépendante, Ardèche, France).
-TARIFS HT : Tournage 380€/demi-journée (matériel inclus) · Post-prod 250€/demi-journée · Sous-titres +125€ · Drone 380€ forfait · Déplacement local=80€/régional=130€/long=180€ · Photo 110€/h · TVA 20%
-LOGIQUE POST-PROD : Bloc1 Dérush: libre=0.5-1dj/trame=0.5dj/script=0.25dj/capsules=0.25dj | Bloc2 Montage: libre=2-3dj/trame=1.5-2dj/script=1-1.5dj/capsule=0.5dj-par-capsule | Bloc3 Finition: standard=0.5dj/soigné=1dj/premium=1.5-2dj | Bloc4 Déclinaisons: 1film=+0/1film+=+0.5-1dj | 1dj=250€HT
-RÈGLE ÉCRITURE: Si script précis → inclure 150€HT écriture absorbée dans post-prod (pas de ligne séparée).
-PROJET: Type=${S.ptype} | Desc=${S.desc||'Non précisé'} | Tournage=${S.shootId} demi-journées ${ss?.price||''} | Captation=${S.capType==='libre'?'libre':'préparée'} | Post-prod=${bPD()} | Drone=${S.drone?'Oui':'Non'} | Photo=${S.photo?S.photoH+'h':'Non'} | Déplacement=${S.dist} | Livrables=${S.deliv.join(',')||'Non précisé'}
-Réponds UNIQUEMENT en JSON valide sans markdown: {"resume":"2 phrases","lignes":[{"label":"...","detail":"...","ht":0}],"sous_total_ht":0,"tva":0,"total_ttc":0,"fourchette_basse":0,"fourchette_haute":0,"conseil":"1 conseil concret"}`;
+  const prompt=`Tu es l'assistant de devis de NAIMIKO PROD (Ardèche, France).
+TARIFS HT: Tournage 380€/demi-journée · Post-prod 250€/demi-journée · Sous-titres 125€ · Drone 380€ · Déplacement local=80€/régional=130€/long=180€ · Photo 110€/h · TVA 20%
+POST-PROD: Dérush libre=1dj/trame=0.5dj/script=0.25dj | Montage libre=2dj/trame=1.5dj/script=1dj/capsule=0.5dj | Finition standard=0.5dj/soigné=1dj/premium=2dj | 1dj=250€HT
+PROJET: type=${S.ptype} desc="${S.desc||''}" tournage=${S.shootId}dj captation=${S.capType} postprod="${bPD()}" drone=${S.drone} photo=${S.photo?S.photoH+'h':'non'} deplacement=${S.dist} livrables="${S.deliv.join(',')}"
+Réponds UNIQUEMENT en JSON sans markdown: {"resume":"2 phrases","lignes":[{"label":"...","detail":"...","ht":0}],"sous_total_ht":0,"tva":0,"total_ttc":0,"fourchette_basse":0,"fourchette_haute":0,"conseil":"1 conseil"}`;
   try{
-    const res=await fetch('/api/proxy',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({model:'claude-haiku-4-5-20251001',max_tokens:1000,messages:[{role:'user',content:prompt}]})});
-    const data=await res.json();
+    const response=await fetch('/api/proxy',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({model:'claude-haiku-4-5-20251001',max_tokens:800,messages:[{role:'user',content:prompt}]})});
+    const data=await response.json();
+    if(!response.ok||data.error){
+      throw new Error('Anthropic: '+(data.error?.message||JSON.stringify(data)));
+    }
     const txt=data.content?.map(i=>i.text||'').join('')||'';
-    console.log('Réponse brute:', txt); S.result=JSON.parse(txt.replace(/```json|```/g,'').trim());
+    const clean=txt.replace(/```json|```/g,'').trim();
+    S.result=JSON.parse(clean);
     S.step=5;
-  }catch(e){const errMsg = err?.message || JSON.stringify(err); alert('Erreur: ' + errMsg);}
+  }catch(e){
+    alert('Erreur: '+e.message);
+  }
   finally{S.loading=false;render();}
 }
 function rResult(c){
