@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Naimiko Prod — Estimation de devis</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: #0D0D0D; color: #F0F0F0; min-height: 100vh; }
+  .app { max-width: 560px; margin: 0 auto; padding: 0 16px 48px; }
+  .header { border-bottom: 1px solid #222; padding: 16px 0 12px; margin-bottom: 22px; position: sticky; top: 0; background: #0D0D0D; z-index: 10; }
+  .logo { display: flex; align-items: center; gap: 10px; margin-bottom: 12px; }
+  .logo-icon { width: 34px; height: 34px; background: linear-gradient(135deg, #E91E8C, #00BCD4); border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 16px; }
+  .logo-name { font-weight: 600; font-size: 13px; color: #E91E8C; letter-spacing: 0.04em; }
+  .logo-sub { font-size: 11px; color: #888; }
+  .progress { display: flex; gap: 5px; }
+  .prog-item { flex: 1; }
+  .prog-bar { height: 3px; border-radius: 2px; margin-bottom: 3px; background: #222; transition: background 0.3s; }
+  .prog-bar.active { background: linear-gradient(90deg, #E91E8C, #00BCD4); }
+  .prog-bar.done { background: #00BCD4; }
+  .prog-label { font-size: 10px; color: #888; }
+  .prog-label.cur { color: #FFD600; font-weight: 600; }
+  .prog-label.dn { color: #00BCD4; }
+  h2 { font-size: 20px; font-weight: 700; margin-bottom: 4px; }
+  .sub { font-size: 13px; color: #888; margin-bottom: 18px; line-height: 1.5; }
+  textarea, .fi { width: 100%; background: #141414; border: 1px solid #222; border-radius: 10px; color: #F0F0F0; padding: 10px 12px; font-size: 13px; font-family: inherit; }
+  textarea { min-height: 72px; resize: vertical; }
+  textarea:focus, .fi:focus { outline: none; border-color: #E91E8C; }
+  .desc-block { background: #141414; border: 1px solid #222; border-radius: 12px; padding: 14px; margin-bottom: 14px; }
+  .db-t { font-size: 13px; font-weight: 600; margin-bottom: 4px; }
+  .db-s { font-size: 12px; color: #888; margin-bottom: 10px; line-height: 1.4; }
+  .grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 14px; }
+  .ptype-btn { background: #141414; border: 1px solid #222; border-radius: 12px; padding: 12px 10px; cursor: pointer; text-align: left; transition: all 0.15s; color: #F0F0F0; width: 100%; }
+  .ptype-btn:hover { border-color: #444; }
+  .ptype-btn.sel { border: 2px solid #E91E8C; background: #1a0810; }
+  .ptype-btn .pi { font-size: 18px; margin-bottom: 4px; display: block; }
+  .ptype-btn .pl { font-size: 12px; font-weight: 600; }
+  .shoot-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; margin-bottom: 12px; }
+  .shoot-btn { background: #141414; border: 1px solid #222; border-radius: 12px; padding: 12px 6px 10px; cursor: pointer; text-align: center; transition: all 0.15s; color: #F0F0F0; width: 100%; }
+  .shoot-btn:hover { border-color: #444; }
+  .shoot-btn.sel { border: 2px solid #00BCD4; background: #001a1f; }
+  .shoot-btn .sn { font-size: 12px; font-weight: 600; }
+  .shoot-btn.sel .sn { color: #00BCD4; }
+  .shoot-btn .sh { font-size: 10px; color: #888; margin: 2px 0 5px; }
+  .shoot-btn .sp { font-size: 13px; font-weight: 700; }
+  .shoot-btn.sel .sp { color: #00BCD4; }
+  .shoot-btn .su { font-size: 9px; color: #888; margin-top: 1px; }
+  .grid2c { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 14px; }
+  .ct-btn { background: #141414; border: 1px solid #222; border-radius: 12px; padding: 12px 11px; cursor: pointer; text-align: left; transition: all 0.15s; color: #F0F0F0; width: 100%; }
+  .ct-btn:hover { border-color: #444; }
+  .ct-btn.sel { border: 2px solid #00BCD4; background: #001a1f; }
+  .ct-btn .cti { font-size: 18px; margin-bottom: 4px; display: block; }
+  .ct-btn .ctl { font-size: 12px; font-weight: 600; }
+  .ct-btn.sel .ctl { color: #00BCD4; }
+  .ct-btn .cts { font-size: 11px; color: #888; margin-top: 2px; line-height: 1.4; }
+  .pp-section { margin-bottom: 18px; }
+  .pp-title { font-size: 13px; font-weight: 600; margin-bottom: 4px; }
+  .pp-sub { font-size: 12px; color: #888; margin-bottom: 10px; line-height: 1.4; }
+  .pp-row { display: flex; flex-direction: column; gap: 7px; }
+  .pp-btn { background: #141414; border: 1px solid #222; border-radius: 12px; padding: 11px 13px; cursor: pointer; display: flex; align-items: center; gap: 10px; text-align: left; width: 100%; color: #F0F0F0; transition: all 0.15s; }
+  .pp-btn:hover { border-color: #444; }
+  .pp-btn.sl { border: 2px solid #E91E8C; background: #1a0810; }
+  .pp-btn.sp { border: 2px solid #00BCD4; background: #001a1f; }
+  .pp-btn.sf { border: 2px solid #FFD600; background: #1a1500; }
+  .pp-icon { font-size: 18px; flex-shrink: 0; }
+  .pp-body { flex: 1; }
+  .pp-name { font-size: 13px; font-weight: 600; }
+  .pp-btn.sl .pp-name { color: #E91E8C; }
+  .pp-btn.sp .pp-name { color: #00BCD4; }
+  .pp-btn.sf .pp-name { color: #FFD600; }
+  .pp-desc { font-size: 11px; color: #888; margin-top: 2px; line-height: 1.4; }
+  .pp-badge { font-size: 10px; font-weight: 600; color: #00BCD4; border: 1px solid #00BCD4; border-radius: 10px; padding: 2px 7px; margin-top: 4px; display: inline-block; }
+  .rdot { width: 16px; height: 16px; border-radius: 50%; border: 2px solid #444; flex-shrink: 0; position: relative; transition: all 0.15s; }
+  .rdot::after { content:''; width:6px; height:6px; border-radius:50%; background:white; position:absolute; top:50%; left:50%; transform:translate(-50%,-50%); display:none; }
+  .rdot.ol { border-color:#E91E8C; background:#E91E8C; }
+  .rdot.op { border-color:#00BCD4; background:#00BCD4; }
+  .rdot.of { border-color:#FFD600; background:#FFD600; }
+  .rdot.ol::after,.rdot.op::after,.rdot.of::after { display:block; }
+  .slabel { font-size: 10px; font-weight: 600; color: #888; letter-spacing: 0.1em; text-transform: uppercase; margin-bottom: 8px; margin-top: 14px; }
+  .trow { background: #141414; border: 1px solid #222; border-radius: 10px; padding: 10px 12px; cursor: pointer; display: flex; align-items: center; gap: 10px; width: 100%; text-align: left; color: #F0F0F0; margin-bottom: 6px; transition: all 0.15s; }
+  .trow:hover { border-color: #444; }
+  .trow.on { border-color: #00BCD4; background: #001a1f; }
+  .ti { font-size: 15px; }
+  .tt { flex: 1; }
+  .tl { font-size: 13px; font-weight: 600; }
+  .ts { font-size: 11px; color: #888; }
+  .tdot { width: 18px; height: 18px; border-radius: 50%; background: #333; display: flex; align-items: center; justify-content: center; font-size: 10px; flex-shrink: 0; color: white; transition: background 0.15s; }
+  .tdot.on { background: #00BCD4; }
+  .drow { background: #141414; border: 1px solid #222; border-radius: 10px; padding: 10px 12px; cursor: pointer; display: flex; justify-content: space-between; align-items: center; color: #F0F0F0; margin-bottom: 6px; width: 100%; transition: all 0.15s; }
+  .drow:hover { border-color: #444; }
+  .drow.sel { border-color: #00BCD4; background: #001a1f; }
+  .drow .dl { font-size: 13px; }
+  .drow .dp { font-size: 12px; font-weight: 600; color: #888; }
+  .drow.sel .dp { color: #00BCD4; }
+  .tags { display: flex; flex-wrap: wrap; gap: 6px; }
+  .tag { padding: 6px 12px; border-radius: 20px; font-size: 11px; cursor: pointer; background: #141414; border: 1px solid #222; color: #888; transition: all 0.15s; }
+  .tag.on { border-color: #E91E8C; color: #E91E8C; font-weight: 600; background: #1a0810; }
+  .nav { display: flex; gap: 9px; margin-top: 24px; }
+  .btn-back { flex: 1; padding: 13px; background: #141414; border: 1px solid #222; border-radius: 12px; color: #888; cursor: pointer; font-size: 14px; font-family: inherit; }
+  .btn-next { flex: 2; padding: 13px; border: none; border-radius: 12px; font-size: 14px; font-weight: 700; cursor: pointer; font-family: inherit; }
+  .btn-next.go { background: linear-gradient(135deg, #E91E8C, #00BCD4); color: white; }
+  .btn-next.gen { background: linear-gradient(135deg, #E91E8C, #FFD600); color: #111; }
+  .btn-next:disabled { background: #222; color: #555; cursor: not-allowed; }
+  .rcard { background: linear-gradient(135deg, #1a0510, #001a1f); border: 1px solid #222; border-radius: 16px; padding: 24px 20px; text-align: center; margin-bottom: 14px; }
+  .rp-lbl { font-size: 11px; color: #888; margin-bottom: 6px; letter-spacing: 0.08em; text-transform: uppercase; }
+  .rp-main { font-size: 52px; font-weight: 900; color: #E91E8C; line-height: 1; margin-bottom: 4px; }
+  .rp-tva { font-size: 12px; color: #888; margin-bottom: 12px; }
+  .rp-range { display: inline-block; padding: 6px 14px; background: #1a1500; border: 1px solid #FFD60033; border-radius: 20px; font-size: 12px; color: #FFD600; }
+  .rc { background: #141414; border: 1px solid #222; border-radius: 12px; padding: 14px 16px; margin-bottom: 10px; }
+  .rc-hd { font-size: 10px; font-weight: 700; color: #888; letter-spacing: 0.1em; text-transform: uppercase; padding-bottom: 10px; border-bottom: 1px solid #222; }
+  .dline { display: flex; justify-content: space-between; align-items: center; padding: 10px 0; border-bottom: 1px solid #222; }
+  .dline:last-child { border-bottom: none; }
+  .dline .dll { font-size: 13px; font-weight: 600; }
+  .dline .dls { font-size: 11px; color: #888; }
+  .dline .dlp { font-size: 14px; font-weight: 700; color: #00BCD4; white-space: nowrap; margin-left: 10px; }
+  .cons { background: #001a1f; border: 1px solid #00BCD433; border-left: 3px solid #00BCD4; border-radius: 0 10px 10px 0; padding: 12px 14px; margin-bottom: 16px; }
+  .cons-l { font-size: 10px; font-weight: 700; color: #00BCD4; letter-spacing: 0.08em; margin-bottom: 3px; }
+  .cons-t { font-size: 13px; line-height: 1.6; }
+  .ctabox { background: linear-gradient(135deg, #1a0810, #001a1f); border: 1px solid #E91E8C44; border-radius: 14px; padding: 18px; margin-bottom: 12px; }
+  .cta-t { font-size: 16px; font-weight: 700; margin-bottom: 4px; }
+  .cta-s { font-size: 13px; color: #888; margin-bottom: 16px; line-height: 1.5; }
+  .field { margin-bottom: 10px; }
+  .field label { font-size: 12px; color: #888; display: block; margin-bottom: 5px; }
+  .btn-send { width: 100%; padding: 13px; border: none; border-radius: 12px; font-size: 15px; font-weight: 700; cursor: pointer; font-family: inherit; background: linear-gradient(135deg, #E91E8C, #00BCD4); color: white; margin-top: 4px; }
+  .btn-send:disabled { background: #222; color: #555; cursor: not-allowed; }
+  .ok-box { background: #001a1f; border: 1px solid #00BCD444; border-radius: 14px; padding: 22px; text-align: center; margin-bottom: 12px; }
+  .btn-reset { width: 100%; padding: 12px; background: transparent; border: 1px solid #222; border-radius: 12px; color: #888; cursor: pointer; font-size: 13px; font-family: inherit; }
+  .spinner-wrap { text-align: center; padding: 48px 20px; }
+  .spinner { width: 32px; height: 32px; border: 2px solid #333; border-top-color: #E91E8C; border-radius: 50%; animation: sp 0.8s linear infinite; margin: 0 auto 14px; }
+  @keyframes sp { to { transform: rotate(360deg); } }
+  .phhours { display: flex; gap: 7px; margin-top: 8px; }
+  .phbtn { flex: 1; padding: 7px; border-radius: 8px; font-size: 12px; font-weight: 600; cursor: pointer; background: #141414; border: 1px solid #222; color: #888; font-family: inherit; }
+  .phbtn.on { border-color: #E91E8C; color: #E91E8C; background: #1a0810; }
+</style>
+</head>
+<body>
+<div class="app">
+  <div class="header">
+    <div class="logo">
+      <div class="logo-icon">🎬</div>
+      <div>
+        <div class="logo-name">NAIMIKO PROD</div>
+        <div class="logo-sub">Estimation de devis instantanée</div>
+      </div>
+    </div>
+    <div class="progress" id="progress"></div>
+  </div>
+  <div id="content"></div>
+</div>
+<script>
+const STEPS=[{id:1,label:'Projet'},{id:2,label:'Tournage'},{id:3,label:'Post-prod'},{id:4,label:'Options'}];
+const PTYPES=[{id:'institutionnel',label:'Film institutionnel',icon:'🏢'},{id:'touristique',label:'Film touristique',icon:'🏔️'},{id:'evenement',label:'Événement / Festival',icon:'🎪'},{id:'reseaux',label:'Capsules réseaux',icon:'📱'},{id:'pub',label:'Publicité / Promo',icon:'📣'},{id:'autre',label:'Autre projet',icon:'🎬'}];
+const SHOOT=[{id:'0.5',label:'½ journée',hours:'~4h',price:'380 € HT'},{id:'1',label:'1 journée',hours:'~8h',price:'760 € HT'},{id:'1.5',label:'1 j. ½',hours:'~12h',price:'1 140 € HT'},{id:'2',label:'2 journées',hours:'~16h',price:'1 520 € HT'},{id:'3',label:'3 journées',hours:'~24h',price:'2 280 € HT'},{id:'4+',label:'4 jours +',hours:'',price:'Sur devis'}];
+const CAPTYPE=[{id:'libre',icon:'🎥',label:'Captation libre',sub:'Peu ou pas scriptée\nEx : événement, reportage'},{id:'prepare',icon:'📋',label:'Tournage préparé',sub:'Structure ou script défini\nEx : interview, institutionnel'}];
+const LIVRABLES=[{id:'1film',icon:'🎞️',name:'1 vidéo finale',desc:'Un seul film livré'},{id:'1film+',icon:'🎞️📱',name:'1 vidéo + déclinaisons',desc:'Film principal + formats réseaux / teaser'},{id:'capsules',icon:'📱',name:'Plusieurs capsules',desc:'2 capsules et plus, formats courts'}];
+const PREPARATION=[{id:'libre',icon:'🌊',name:'Captation libre',desc:'Peu ou pas scriptée — événement, reportage, spontané',badge:null},{id:'trame',icon:'📋',name:'Trame générale',desc:"Structure définie — interview + plans d'illustration",badge:null},{id:'script',icon:'✍️',name:'Script précis',desc:'Plan par plan — pub, promo, séquences planifiées',badge:'Préprod & écriture incluses'}];
+const FINITION=[{id:'standard',icon:'✂️',name:'Standard',desc:'Montage propre, musique, titres basiques'},{id:'soigne',icon:'⭐',name:'Soigné',desc:'Étalonnage poussé, sound design travaillé, graphiques soignés'},{id:'premium',icon:'🏆',name:'Premium',desc:'Motion design, habillage complet, finitions cinématographiques'}];
+let S={step:1,ptype:'',desc:'',shootId:'',capType:'',livrable:'',preparation:'',finition:'',soustitres:false,drone:false,photo:false,photoH:'2',dist:'local',deliv:[],result:null,contactSent:false,loading:false,ct:{name:'',email:'',phone:'',msg:''}};
+const isR=()=>S.ptype==='reseaux';
+const canNext=()=>{if(S.step===1)return!!S.ptype;if(S.step===2)return!!S.shootId&&!!S.capType;if(S.step===3)return isR()?(!!S.livrable&&!!S.finition):(!!S.livrable&&!!S.preparation&&!!S.finition);return true;};
+function render(){
+  rProg();const c=document.getElementById('content');const nb=document.getElementById('nb');if(nb)nb.remove();
+  if(S.loading){c.innerHTML='<div class="spinner-wrap"><div class="spinner"></div><p style="font-size:13px;color:#888">L\'IA calcule votre estimation…</p></div>';return;}
+  if(S.step===5){rResult(c);return;}
+  if(S.step===1)r1(c);if(S.step===2)r2(c);if(S.step===3)r3(c);if(S.step===4)r4(c);rNav();
+}
+function rProg(){if(S.step>=5){document.getElementById('progress').innerHTML='';return;}document.getElementById('progress').innerHTML=STEPS.map(s=>{const bc=s.id<S.step?'done':s.id===S.step?'active':'';const lc=s.id<S.step?'dn':s.id===S.step?'cur':'';return`<div class="prog-item"><div class="prog-bar ${bc}"></div><div class="prog-label ${lc}">${s.label}</div></div>`;}).join('');}
+function r1(c){const btns=PTYPES.map(p=>`<button class="ptype-btn${S.ptype===p.id?' sel':''}" onclick="S.ptype='${p.id}';render()"><span class="pi">${p.icon}</span><span class="pl">${p.label}</span></button>`).join('');c.innerHTML=`<h2>Votre projet</h2><p class="sub">Quel type de production recherchez-vous ?</p><div class="grid2">${btns}</div><div class="desc-block"><div class="db-t">Décrivez votre projet</div><div class="db-s">Plus vous êtes précis, plus l'estimation sera juste — contexte, lieux, ambiance, date, intervenants…</div><textarea placeholder="Ex : Film de présentation 3 min pour un domaine viticole ardéchois. Interview du gérant + images extérieures. Pour le site web et Instagram." oninput="S.desc=this.value">${S.desc}</textarea></div>`;}
+function r2(c){const sb=SHOOT.map(d=>`<button class="shoot-btn${S.shootId===d.id?' sel':''}" onclick="S.shootId='${d.id}';render()"><div class="sn">${d.label}</div><div class="sh">${d.hours||'&nbsp;'}</div><div class="sp">${d.price}</div><div class="su">${d.hours?'matériel inclus':'&nbsp;'}</div></button>`).join('');const cb=CAPTYPE.map(d=>`<button class="ct-btn${S.capType===d.id?' sel':''}" onclick="S.capType='${d.id}';render()"><span class="cti">${d.icon}</span><div class="ctl">${d.label}</div><div class="cts">${d.sub.replace('\n','<br>')}</div></button>`).join('');c.innerHTML=`<h2>Tournage</h2><p class="sub">Prix affiché — chef opérateur + tout le matériel inclus (Sony FX3 4K, éclairage, son).</p><div class="shoot-grid">${sb}</div><div class="slabel" style="margin-top:6px">Type de captation</div><div class="grid2c">${cb}</div>`;}
+function ppBtn(d,selClass,dotClass,onclick){const isS=S[selClass.key]===d.id;const badge=d.badge?`<div class="pp-badge">${d.badge}</div>`:'';return`<button class="pp-btn${isS?' '+selClass.cls:''}" onclick="${onclick}('${d.id}')"><span class="pp-icon">${d.icon}</span><div class="pp-body"><div class="pp-name">${d.name}</div><div class="pp-desc">${d.desc}</div>${isS&&d.badge?badge:(!isS&&d.badge?'':badge)}</div><div class="rdot${isS?' '+dotClass:''}"></div></button>`;}
+function r3(c){
+  const lr=LIVRABLES.map(d=>{const isS=S.livrable===d.id;return`<button class="pp-btn${isS?' sl':''}" onclick="S.livrable='${d.id}';render()"><span class="pp-icon">${d.icon}</span><div class="pp-body"><div class="pp-name">${d.name}</div><div class="pp-desc">${d.desc}</div></div><div class="rdot${isS?' ol':''}"></div></button>`;}).join('');
+  if(isR()){
+    const fr=FINITION.map(d=>{const isS=S.finition===d.id;return`<button class="pp-btn${isS?' sf':''}" onclick="S.finition='${d.id}';render()"><span class="pp-icon">${d.icon}</span><div class="pp-body"><div class="pp-name">${d.name}</div><div class="pp-desc">${d.desc}</div></div><div class="rdot${isS?' of':''}"></div></button>`;}).join('');
+    const st=`<button class="trow${S.soustitres?' on':''}" onclick="S.soustitres=!S.soustitres;render()"><span class="ti">💬</span><div class="tt"><div class="tl">Sous-titres sur chaque capsule</div><div class="ts">Incrustés pour l'accessibilité et l'autoplay muet</div></div><div class="tdot${S.soustitres?' on':''}">✓</div></button>`;
+    c.innerHTML=`<h2>Post-production</h2><p class="sub">3 questions pour estimer précisément le travail de montage.</p><div class="pp-section"><div class="pp-title">Combien de vidéos ?</div><div class="pp-row">${lr}</div></div><div class="pp-section" style="margin-top:16px"><div class="pp-title">Niveau de finition</div><div class="pp-sub">Définit l'exigence du montage, de l'étalonnage et du sound design.</div><div class="pp-row">${fr}</div></div><div class="pp-section" style="margin-top:14px">${st}</div><div class="desc-block"><div class="db-t">Précisez vos capsules</div><div class="db-s">Quel message ? Quelle plateforme ? Ambiance, durée, objectif ?</div><textarea placeholder="Ex : 3 capsules pour notre brasserie sur Instagram et TikTok. Ambiance chaleureuse, 30 à 45 sec par vidéo." oninput="S.desc=this.value">${S.desc}</textarea></div>`;
+  } else {
+    const pr=PREPARATION.map(d=>{const isS=S.preparation===d.id;const badge=d.badge?`<div class="pp-badge">${d.badge}</div>`:'';return`<button class="pp-btn${isS?' sp':''}" onclick="S.preparation='${d.id}';render()"><span class="pp-icon">${d.icon}</span><div class="pp-body"><div class="pp-name">${d.name}</div><div class="pp-desc">${d.desc}</div>${badge}</div><div class="rdot${isS?' op':''}"></div></button>`;}).join('');
+    const fr=FINITION.map(d=>{const isS=S.finition===d.id;return`<button class="pp-btn${isS?' sf':''}" onclick="S.finition='${d.id}';render()"><span class="pp-icon">${d.icon}</span><div class="pp-body"><div class="pp-name">${d.name}</div><div class="pp-desc">${d.desc}</div></div><div class="rdot${isS?' of':''}"></div></button>`;}).join('');
+    const st=`<button class="trow${S.soustitres?' on':''}" onclick="S.soustitres=!S.soustitres;render()"><span class="ti">💬</span><div class="tt"><div class="tl">Ajouter des sous-titres</div><div class="ts">Incrustés sur le film final</div></div><div class="tdot${S.soustitres?' on':''}">✓</div></button>`;
+    c.innerHTML=`<h2>Post-production</h2><p class="sub">3 questions pour estimer précisément le travail de montage.</p><div class="pp-section"><div class="pp-title">Combien de livrables ?</div><div class="pp-row">${lr}</div></div><div class="pp-section" style="margin-top:16px"><div class="pp-title">Niveau de préparation</div><div class="pp-sub">Détermine le temps de dérushage et la complexité du montage.</div><div class="pp-row">${pr}</div></div><div class="pp-section" style="margin-top:16px"><div class="pp-title">Niveau de finition</div><div class="pp-sub">Exigence sur l'étalonnage, le sound design et le graphisme.</div><div class="pp-row">${fr}</div></div><div class="pp-section" style="margin-top:14px">${st}</div><div class="desc-block" style="margin-top:14px"><div class="db-t">Décrivez votre film</div><div class="db-s">Contexte, intervenants, lieux, style souhaité…</div><textarea placeholder="Ex : Film touristique 4 min sur les Gorges de l'Ardèche. Drone + sol. 2 guides interviewés. Livraison 16:9 web + 9:16 réseaux." oninput="S.desc=this.value">${S.desc}</textarea></div>`;
+  }
+}
+function r4(c){const dO=isR()?['Format Instagram','Format TikTok','Format YouTube Shorts','Miniatures personnalisées']:['Film 16:9 web','Format 9:16 réseaux','Teaser 30s','Photos HD'];const tags=dO.map(t=>`<button class="tag${S.deliv.includes(t)?' on':''}" onclick="tD('${t}')">${t}</button>`).join('');c.innerHTML=`<h2>Options</h2><p class="sub">Dernières options pour votre estimation.</p><div class="slabel">Prestations complémentaires</div>${tr('drone','🚁','Drone','Autorisations préfectorales incluses · 380 € HT')}${tr('photo','📷','Photographie','Captation photo + retouches Lightroom · 110 € HT/h')}${S.photo?`<div style="margin:0 0 6px 12px"><div style="font-size:11px;color:#888;margin-bottom:4px">Durée :</div><div class="phhours">${['1','2','3','4'].map(h=>`<button class="phbtn${S.photoH===h?' on':''}" onclick="S.photoH='${h}';render()">${h}h</button>`).join('')}</div></div>`:''}<div class="slabel">Déplacement</div>${dr('local','Local (< 30 km)','80 € HT')}${dr('regional','Régional (30–100 km)','130 € HT')}${dr('long','Long trajet (> 100 km)','180 € HT')}<div class="slabel">Formats de livraison</div><div class="tags">${tags}</div>`;}
+function tr(k,icon,l,s){return`<button class="trow${S[k]?' on':''}" onclick="S['${k}']=!S['${k}'];render()"><span class="ti">${icon}</span><div class="tt"><div class="tl">${l}</div><div class="ts">${s}</div></div><div class="tdot${S[k]?' on':''}">✓</div></button>`;}
+function dr(id,l,p){return`<button class="drow${S.dist===id?' sel':''}" onclick="S.dist='${id}';render()"><span class="dl">${l}</span><span class="dp">${p}</span></button>`;}
+function tD(v){S.deliv=S.deliv.includes(v)?S.deliv.filter(d=>d!==v):[...S.deliv,v];render();}
+function rNav(){const nb=document.createElement('div');nb.id='nb';nb.className='nav';if(S.step>1){const b=document.createElement('button');b.className='btn-back';b.textContent='← Retour';b.onclick=()=>{S.step--;render();};nb.appendChild(b);}const ok=canNext();const n=document.createElement('button');n.className=S.step<4?'btn-next go':'btn-next gen';n.disabled=!ok;n.textContent=S.step<4?'Continuer →':'✨ Voir mon estimation';n.onclick=S.step<4?()=>{S.step++;render();}:doGen;nb.appendChild(n);document.querySelector('.app').appendChild(nb);}
+function bPD(){if(isR()){const lm={'1film':'1 capsule unique','1film+':'1 capsule + déclinaisons','capsules':'Plusieurs capsules (2 ou plus)'};const fm={'standard':'finition standard','soigne':'finition soignée','premium':'finition premium'};return`${lm[S.livrable]||S.livrable}, ${fm[S.finition]||S.finition}${S.soustitres?', avec sous-titres':''}`;}const lm={'1film':'1 vidéo finale','1film+':'1 vidéo + déclinaisons','capsules':'Plusieurs vidéos distinctes'};const pm={'libre':"captation libre — beaucoup de rushes, dérush important, récit à construire. PAS d'écriture.",'trame':"trame générale — structure connue, montage fluide. PAS d'écriture.",'script':'script précis — peu de rushes, montage ciblé. INCLURE préprod/écriture 150€ HT absorbée dans le montage réduit.'};const fm={'standard':'finition standard','soigne':'finition soignée','premium':'finition premium (motion design)'};return`${lm[S.livrable]||S.livrable} | ${pm[S.preparation]||S.preparation} | ${fm[S.finition]||S.finition}${S.soustitres?' | + sous-titres (125€ HT)':''}`;}
+async function doGen(){
+  S.loading=true;render();
+  const ss=SHOOT.find(d=>d.id===S.shootId);
+  const prompt=`Tu es l'assistant de devis de NAIMIKO PROD (production audiovisuelle indépendante, Ardèche, France).
+TARIFS HT : Tournage 380€/demi-journée (matériel inclus) · Post-prod 250€/demi-journée · Sous-titres +125€ · Drone 380€ forfait · Déplacement local=80€/régional=130€/long=180€ · Photo 110€/h · TVA 20%
+LOGIQUE POST-PROD : Bloc1 Dérush: libre=0.5-1dj/trame=0.5dj/script=0.25dj/capsules=0.25dj | Bloc2 Montage: libre=2-3dj/trame=1.5-2dj/script=1-1.5dj/capsule=0.5dj-par-capsule | Bloc3 Finition: standard=0.5dj/soigné=1dj/premium=1.5-2dj | Bloc4 Déclinaisons: 1film=+0/1film+=+0.5-1dj | 1dj=250€HT
+RÈGLE ÉCRITURE: Si script précis → inclure 150€HT écriture absorbée dans post-prod (pas de ligne séparée).
+PROJET: Type=${S.ptype} | Desc=${S.desc||'Non précisé'} | Tournage=${S.shootId} demi-journées ${ss?.price||''} | Captation=${S.capType==='libre'?'libre':'préparée'} | Post-prod=${bPD()} | Drone=${S.drone?'Oui':'Non'} | Photo=${S.photo?S.photoH+'h':'Non'} | Déplacement=${S.dist} | Livrables=${S.deliv.join(',')||'Non précisé'}
+Réponds UNIQUEMENT en JSON valide sans markdown: {"resume":"2 phrases","lignes":[{"label":"...","detail":"...","ht":0}],"sous_total_ht":0,"tva":0,"total_ttc":0,"fourchette_basse":0,"fourchette_haute":0,"conseil":"1 conseil concret"}`;
+  try{
+    const res=await fetch('/api/proxy',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:1000,messages:[{role:'user',content:prompt}]})});
+    const data=await res.json();
+    const txt=data.content?.map(i=>i.text||'').join('')||'';
+    S.result=JSON.parse(txt.replace(/```json|```/g,'').trim());
+    S.step=5;
+  }catch(e){alert('Erreur lors du calcul. Veuillez réessayer.');}
+  finally{S.loading=false;render();}
+}
+function rResult(c){
+  const r=S.result;const fmt=n=>n?.toLocaleString('fr-FR')?? '—';
+  const lines=(r.lignes||[]).map(l=>`<div class="dline"><div><div class="dll">${l.label}</div>${l.detail?`<div class="dls">${l.detail}</div>`:''}</div><div class="dlp">${l.ht>0?fmt(l.ht)+' € HT':'Inclus'}</div></div>`).join('');
+  const cta=S.contactSent?`<div class="ok-box"><div style="font-size:28px;margin-bottom:10px">✅</div><div style="font-size:16px;font-weight:700;margin-bottom:6px">Demande envoyée !</div><div style="font-size:13px;color:#888;line-height:1.7">Merci <strong style="color:#F0F0F0">${S.ct.name}</strong> !<br>Korentin vous recontactera à <strong style="color:#00BCD4">${S.ct.email}</strong>.</div></div>`:
+  `<div class="ctabox"><div class="cta-t">Ce devis vous intéresse ?</div><div class="cta-s">Laissez vos coordonnées — Korentin vous recontacte rapidement pour confirmer.</div><div class="field"><label>Votre nom *</label><input class="fi" type="text" placeholder="Prénom Nom ou Société" value="${S.ct.name}" oninput="S.ct.name=this.value;rb()"></div><div class="field"><label>Email *</label><input class="fi" type="email" placeholder="votre@email.com" value="${S.ct.email}" oninput="S.ct.email=this.value;rb()"></div><div class="field"><label>Téléphone</label><input class="fi" type="tel" placeholder="06 xx xx xx xx" value="${S.ct.phone}" oninput="S.ct.phone=this.value"></div><div class="field"><label>Message (optionnel)</label><textarea style="min-height:48px" placeholder="Date, lieu, précisions…" oninput="S.ct.msg=this.value">${S.ct.msg}</textarea></div><button class="btn-send" id="bsend" onclick="doSend()" ${S.ct.name&&S.ct.email?'':'disabled'}>📩 Envoyer ma demande</button></div>`;
+  c.innerHTML=`<div class="rcard"><div class="rp-lbl">Estimation pour votre projet</div><div class="rp-main">${fmt(r.total_ttc)} €</div><div class="rp-tva">TTC · dont ${fmt(r.tva)} € de TVA (20%)</div><div class="rp-range">Fourchette : ${fmt(r.fourchette_basse)} — ${fmt(r.fourchette_haute)} € TTC</div></div><div class="rc"><p style="font-size:13px;line-height:1.6">${r.resume}</p></div><div class="rc"><div class="rc-hd">Détail</div>${lines}</div>${r.conseil?`<div class="cons"><div class="cons-l">💡 CONSEIL</div><div class="cons-t">${r.conseil}</div></div>`:''}${cta}<button class="btn-reset" onclick="raz()">← Nouvelle estimation</button>`;
+}
+function rb(){const b=document.getElementById('bsend');if(b)b.disabled=!(S.ct.name&&S.ct.email);}
+function doSend(){if(S.ct.name&&S.ct.email){S.contactSent=true;render();}}
+function raz(){S={step:1,ptype:'',desc:'',shootId:'',capType:'',livrable:'',preparation:'',finition:'',soustitres:false,drone:false,photo:false,photoH:'2',dist:'local',deliv:[],result:null,contactSent:false,loading:false,ct:{name:'',email:'',phone:'',msg:''}};render();}
+render();
+</script>
+</body>
+</html>
